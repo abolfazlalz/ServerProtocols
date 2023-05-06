@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"golang.org/x/net/websocket"
 	"io"
+	"log"
 	"strconv"
+	"time"
 )
 
 type Client struct {
 	*websocket.Conn
-	Id string
+	Id        string
+	startTime time.Time
 }
 
 type Server struct {
@@ -40,11 +43,13 @@ func (s *Server) handleWs(ws *websocket.Conn) {
 	id := getMD5Hash(strconv.Itoa(int(s.count)))
 
 	client := &Client{
-		Conn: ws,
-		Id:   id,
+		Conn:      ws,
+		Id:        id,
+		startTime: time.Now(),
 	}
 
 	s.connections[id] = client
+	log.Printf("%s joined to server", id)
 
 	s.readLoop(client)
 }
@@ -81,4 +86,15 @@ func (s *Server) broadcast(msg string) {
 
 func (s *Server) HandleHttp(http *http.Server) {
 	http.Handle("/ws", websocket.Handler(s.handleWs))
+}
+
+func (s *Server) Send(id string, msg string) error {
+	if s.connections[id] != nil {
+		_, err := s.connections[id].Write([]byte(msg))
+		if err != nil {
+			log.Printf("Log error %v", err)
+			return err
+		}
+	}
+	return nil
 }
