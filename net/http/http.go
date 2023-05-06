@@ -25,6 +25,11 @@ func (s *Server) Handle(pattern string, handler http.Handler) {
 	http.Handle(pattern, handler)
 }
 
+func (s *Server) StaticFolder(pattern string, folder string) {
+	fs := http.FileServer(http.Dir(folder))
+	http.Handle(pattern, fs)
+}
+
 func (s *Server) Listen() error {
 	addr := fmt.Sprintf("%s:%s", s.ServerConfig.Host, s.ServerConfig.Port)
 	log.Printf("Server serve at %s", addr)

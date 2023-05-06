@@ -10,6 +10,7 @@ func main() {
 	httpServer := http.New()
 	socketServer := socket.New()
 
+	httpServer.StaticFolder("/", "public")
 	socketServer.HandleHttp(httpServer)
 
 	go func() {

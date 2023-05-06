@@ -1,0 +1,12 @@
+.container {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.container input[type="text"] {
+    padding: 5px 10px;
+}
+
+.w-100 {
+    width: 100%;
+}
